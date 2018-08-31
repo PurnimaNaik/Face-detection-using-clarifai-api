@@ -22,6 +22,7 @@ class App extends React.Component{
       loaded:true,
       imageAddress:'',
       noFacesFound: false,
+      warning:"",
     };
     this.handleOptionChange = this.handleOptionChange.bind(this);
   }
@@ -37,7 +38,8 @@ class App extends React.Component{
       faceRegionArray: [],
       boundingBoxArray: [],
       imageAddress: '',
-      numberOfFaces:0
+      numberOfFaces:0,
+      warning:"",
     });
 
     //disabling the 'FileBase64' button
@@ -69,7 +71,8 @@ class App extends React.Component{
         base64Variable:imageMedia,
         faceRegionArray: [],
         boundingBoxArray: [],
-        imageAddress:files[0].base64
+        imageAddress:files[0].base64,
+        warning:"",
       });
     }
 
@@ -80,7 +83,8 @@ class App extends React.Component{
         base64Variable:imageMedia,
         faceRegionArray: [],
         boundingBoxArray: [],
-        imageAddress:files[0].base64
+        imageAddress:files[0].base64,
+        warning:"",
       });
     }
 
@@ -91,7 +95,8 @@ class App extends React.Component{
         base64Variable:imageMedia,
         faceRegionArray: [],
         boundingBoxArray: [],
-        imageAddress:files[0].base64
+        imageAddress:files[0].base64,
+        warning:"",
       });
     }
 
@@ -102,7 +107,8 @@ class App extends React.Component{
         base64Variable:imageMedia,
         faceRegionArray: [],
         boundingBoxArray: [],
-        imageAddress:files[0].base64
+        imageAddress:files[0].base64,
+        warning:"",
       });
     }
 
@@ -113,19 +119,20 @@ class App extends React.Component{
         base64Variable:imageMedia,
         faceRegionArray: [],
         boundingBoxArray: [],
-        imageAddress:files[0].base64
+        imageAddress:files[0].base64,
+        warning:"",
       });
     }
 
     else{
-      window.alert("Please try again with an image of valid format!");
       this.setState({
         files:'',
         base64Variable:'',
         faceRegionArray: [],
         boundingBoxArray: [],
         imageAddress:'',
-        numberOfFaces:0
+        numberOfFaces:0,
+        warning:"Please try again with an image of valid format!",
       });
       return;
     }
@@ -150,15 +157,20 @@ class App extends React.Component{
         boundingBoxArray: [],
         showCanvasFlag:false,
         numberOfFaces:0,
-        imageAddress:''
+        imageAddress:'',
+        warning:"",
       });
     }
 
     else{
-      window.alert("Please paste a link starting with - https:// or http://");
-      return;
+
+      this.setState({
+        warning:"Please enter a valid URL!"
+      });
     }
+    return;
   }
+
 
   //when user hits predict button
   predict = () => {
@@ -200,7 +212,6 @@ class App extends React.Component{
       function(response) {
         var numberOfFacesHolder=""
         var arrayRegion=response.outputs[0].data.regions
-
         //check if no faces are detected
         if (arrayRegion==undefined) {
 
@@ -210,16 +221,18 @@ class App extends React.Component{
             showCanvasFlag:true,
             loaded:true,
             noFacesFound: true,
-
+            warning:"",
           });
+
         }
         //check if response status is OK
         else if(response.status.code != "10000"){
-          window.alert("We are sorry, something went wrong. Please try again!");
+
           this.setState({
             numberOfFaces:0,
             boundingBoxArray:[],
             loaded:true,
+            warning:"We are sorry, something went wrong. Please try again!",
           });
         }
 
@@ -238,6 +251,7 @@ class App extends React.Component{
             boundingBoxArray: this.state.boundingBoxArray,
             showCanvasFlag:true,
             noFacesFound: false,
+            warning:"",
           });
         }
         //draw boxes around faces
@@ -246,12 +260,12 @@ class App extends React.Component{
 
       ,function(err) {
         console.error(err);
-        window.alert("We are sorry, something went wrong. Please try again with a different URL!");
 
         this.setState({
           numberOfFaces:0,
           boundingBoxArray:[],
-          loaded:true
+          loaded:true,
+          warning:"We are sorry, something went wrong. Please try again with a different URL!",
         });
 
         //reactivate the user interaction elements
@@ -292,8 +306,8 @@ class App extends React.Component{
 
     for(var i=0; i<this.state.boundingBoxArray.length;i++){
       //using the left_col, top_row, right_col, bottom_row values with additional placement modification to position the bounding box for each face
-      var x = ((this.state.boundingBoxArray[i].left_col) * (domRect.width)) + (domRect.width) + 105;
-      var y = ((this.state.boundingBoxArray[i].top_row) * (domRect.height))  + 160;
+      var x = ((this.state.boundingBoxArray[i].left_col) * (600)) + (600) + 60;
+      var y = ((this.state.boundingBoxArray[i].top_row) * (500))  + 100;
       var width = (this.state.boundingBoxArray[i].right_col - this.state.boundingBoxArray[i].left_col) * 500;
       var height = (this.state.boundingBoxArray[i].bottom_row - this.state.boundingBoxArray[i].top_row) * 500;
 
@@ -359,6 +373,7 @@ class App extends React.Component{
                       </label>
                       {this.state.isMediaURL ? <div id="filebaseId"> <FileBase64 multiple={true} onDone={this.getFiles.bind(this)} /> </div> : <div id="filebaseId"> <FileBase64 multiple={ true } onDone={this.getFiles.bind(this)} /> </div>}
                     </div>
+
                     <div className="url">
                       <label>
                         <input id="radioid2" type="radio" value="URL" checked={this.state.selectedOption === 'URL'} onChange={this.handleOptionChange.bind(this)}/>
@@ -366,11 +381,12 @@ class App extends React.Component{
                       </label>
                       {this.state.isMediaURL ? <div> <input id="textInputId" type="text" name="name" placeholder="Paste URL here" value={this.state.URL} onChange={(event) => this.handleURLChange(event)}/> </div>:<div> <input id="textInputId" disabled type="text" name="name" placeholder="Paste URL here" value={this.state.URL} onChange={(event) => this.handleURLChange(event)}/> </div> }
                     </div>
-                    <br/>
-                    {submitButton}
-                    <br/><br/>
-                    {this.state.noFacesFound ? <h3>No Faces Detected</h3> : <h3>Faces Detected : {this.state.numberOfFaces} </h3>}
 
+                    <br/>
+                      {submitButton}
+                    <br/><br/>
+                      {this.state.warning !="" ? <h4>{this.state.warning}</h4> : ""}
+                      {this.state.noFacesFound ? <h3>No Faces Detected</h3> : <h3>Faces Detected : {this.state.numberOfFaces} </h3>}
                   </div>
 
                   <div className="col-6" id="imageDisplay">
