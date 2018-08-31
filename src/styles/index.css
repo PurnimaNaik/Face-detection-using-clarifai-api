@@ -1,0 +1,58 @@
+#app{
+  margin:0px;
+  padding: 0px;
+}
+
+.heading{
+  font-family: Cochin;
+  position: relative;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+  display:flex;
+  flex-grow: 3;
+  color: white;
+  align-items: flex-start;
+  background-color: salmon;
+  padding-left: 20px;
+}
+.container{
+  display:flex;
+  flex-direction: column;
+  font-family: Cochin;
+}
+.upload{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.url{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+#filebaseId {
+margin-left: 150px;
+}
+#textInputId {
+margin-left: 170px;
+width:192px;
+}
+label{
+  margin-bottom: 0px;
+}
+
+button{
+  background-color: #35A73A;
+  color: white;
+  width:450px;
+  height:35px;
+  border:0px;
+}
+h3{
+  text-align: left;
+  margin-left: 120px;
+}
